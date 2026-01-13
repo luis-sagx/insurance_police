@@ -7,18 +7,20 @@ import '../model/poliza.dart';
 class InsuranceController {
   final String baseUrl = 'http://10.40.6.234:9090/bdd_dto/api';
 
-  Future<bool> createPropietario(Propietario propietario) async {
+  Future<Propietario?> createPropietario(Propietario propietario) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/propietarios'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(propietario.toJson()),
       );
-      return response.statusCode == 200 || response.statusCode == 201;
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return Propietario.fromJson(jsonDecode(response.body));
+      }
     } catch (e) {
       print('Error creating propietario: $e');
-      return false;
     }
+    return null;
   }
 
   Future<bool> createAutomovil(Automovil automovil) async {
@@ -35,6 +37,19 @@ class InsuranceController {
     }
   }
 
+  Future<List<Automovil>> getAutomoviles() async {
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/automoviles'));
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        return data.map((json) => Automovil.fromJson(json)).toList();
+      }
+    } catch (e) {
+      print('Error getting automoviles: $e');
+    }
+    return [];
+  }
+
   Future<Poliza?> getPolizaByAutomovil(int automovilId) async {
     try {
       final response = await http.get(
@@ -42,6 +57,8 @@ class InsuranceController {
       );
       if (response.statusCode == 200) {
         return Poliza.fromJson(jsonDecode(response.body));
+      } else {
+        print('Error getting poliza, status: ${response.statusCode}');
       }
     } catch (e) {
       print('Error getting poliza: $e');

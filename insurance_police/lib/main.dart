@@ -14,6 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Seguros',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
@@ -33,9 +34,9 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   int _currentIndex = 0;
   final List<Widget> _pages = [
-    const PropietarioPage(),
     const AutomovilPage(),
     const PolizaPage(),
+    const PropietarioPage(),
   ];
 
   @override
@@ -50,15 +51,15 @@ class _MainPageState extends State<MainPage> {
           });
         },
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Propietarios',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.receipt), label: 'Pólizas'),
           BottomNavigationBarItem(
             icon: Icon(Icons.directions_car),
             label: 'Automóviles',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.receipt), label: 'Pólizas'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Propietarios',
+          ),
         ],
       ),
     );

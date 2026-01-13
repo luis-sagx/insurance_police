@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../controller/insurance_controller.dart';
 import '../../model/poliza.dart';
+import '../../model/automovil.dart';
 
 class PolizaPage extends StatefulWidget {
   const PolizaPage({super.key});
@@ -10,108 +11,148 @@ class PolizaPage extends StatefulWidget {
 }
 
 class _PolizaPageState extends State<PolizaPage> {
-  final _searchController = TextEditingController();
   final _controller = InsuranceController();
-  Poliza? _poliza;
-  bool _loading = false;
+  List<Automovil> _automoviles = [];
+  bool _loadingList = true;
 
-  Future<void> _search() async {
-    setState(() => _loading = true);
-    final id = int.tryParse(_searchController.text);
-    if (id != null) {
-      final result = await _controller.getPolizaByAutomovil(id);
+  @override
+  void initState() {
+    super.initState();
+    _loadAutomoviles();
+  }
+
+  Future<void> _loadAutomoviles() async {
+    setState(() => _loadingList = true);
+    final autos = await _controller.getAutomoviles();
+    if (mounted) {
       setState(() {
-        _poliza = result;
-        _loading = false;
+        _automoviles = autos;
+        _loadingList = false;
       });
-    } else {
-      setState(() => _loading = false);
     }
   }
 
-  Future<void> _recalculate() async {
-    setState(() => _loading = true);
-    final id = int.tryParse(_searchController.text);
-    if (id != null) {
-      final success = await _controller.recalculate(id);
-      if (success) {
-        _search(); // Refresh
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Recalculado con éxito')),
-          );
-        }
+  Future<void> _showPolizaDetails(Automovil auto) async {
+    showDialog(
+      context: context,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    final poliza = await _controller.getPolizaByAutomovil(auto.id!);
+
+    if (mounted) {
+      Navigator.pop(context); // Close loading
+      if (poliza != null) {
+        _showPolizaDialog(poliza, auto.id!);
       } else {
-        setState(() => _loading = false);
-        if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Error al recalcular')));
-        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No se encontró póliza para este auto')),
+        );
       }
-    } else {
-      setState(() => _loading = false);
+    }
+  }
+
+  void _showPolizaDialog(Poliza poliza, int autoId) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Póliza: ${poliza.modeloAuto}'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Propietario: ${poliza.propietario}'),
+            Text('Edad: ${poliza.edadPropietario}'),
+            Text('Accidentes: ${poliza.accidentes}'),
+            const Divider(),
+            Text(
+              'Valor Seguro: \$${poliza.valorSeguroAuto.toStringAsFixed(2)}',
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cerrar'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _recalculate(autoId);
+            },
+            child: const Text('Recalcular'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _recalculate(int autoId) async {
+    showDialog(
+      context: context,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    final success = await _controller.recalculate(autoId);
+
+    if (mounted) {
+      Navigator.pop(context); // Close loading
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Recalculado con éxito. Revise la póliza nuevamente.',
+            ),
+          ),
+        );
+        // Optionally refresh the list or show the dialog again
+        // For now, let's just let the user tap again to see updated values
+      } else {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Error al recalcular')));
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Consultar Póliza')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: const InputDecoration(
-                      labelText: 'ID Automóvil',
-                    ),
-                    keyboardType: TextInputType.number,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                ElevatedButton(onPressed: _search, child: const Text('Buscar')),
-              ],
-            ),
-            const SizedBox(height: 20),
-            if (_loading) const CircularProgressIndicator(),
-            if (_poliza != null && !_loading) ...[
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Propietario: ${_poliza!.propietario}'),
-                      Text('Edad: ${_poliza!.edadPropietario}'),
-                      Text('Modelo Auto: ${_poliza!.modeloAuto}'),
-                      Text('Accidentes: ${_poliza!.accidentes}'),
-                      const Divider(),
-                      Text(
-                        'Valor Seguro: \$${_poliza!.valorSeguroAuto}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _recalculate,
-                child: const Text('Recalcular Seguro'),
-              ),
-            ] else if (!_loading && _searchController.text.isNotEmpty)
-              const Text('No se encontró información o busque para ver.'),
-          ],
-        ),
+      appBar: AppBar(
+        title: const Text('Seleccione Automóvil'),
+        actions: [
+          IconButton(
+            onPressed: _loadAutomoviles,
+            icon: const Icon(Icons.refresh),
+          ),
+        ],
       ),
+      body: _loadingList
+          ? const Center(child: CircularProgressIndicator())
+          : _automoviles.isEmpty
+          ? const Center(child: Text('No hay automóviles registrados'))
+          : ListView.builder(
+              itemCount: _automoviles.length,
+              itemBuilder: (context, index) {
+                final auto = _automoviles[index];
+                return Card(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
+                  child: ListTile(
+                    leading: const Icon(Icons.directions_car),
+                    title: Text(auto.modelo),
+                    subtitle: Text(
+                      'Propietario: ${auto.propietarioNombreC ?? "Desc"} (ID: ${auto.id})',
+                    ),
+                    //trailing: const Icon(Icons.arrow_forward_ios),
+                    //onTap: () => _showPolizaDetails(auto),
+                  ),
+                );
+              },
+            ),
     );
   }
 }
