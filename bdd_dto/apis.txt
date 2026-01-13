@@ -1,0 +1,30 @@
+http://10.40.6.234:9090/bdd_dto/api/automoviles
+{
+  "modelo": "A",
+  "valor": 25000.00,
+  "accidentes": 0,
+  "propietarioId": 1
+}
+
+
+http://10.40.6.234:9090/bdd_dto/api/propietarios
+{
+  "nombreCompleto": "Juan Pérez",
+  "edad": 35
+}
+
+
+http://10.40.6.234:9090/bdd_dto/api/seguros/automovil/1
+
+
+http://10.40.6.234:9090/bdd_dto/api/seguros/recalcular/1
+
+
+http://10.40.6.234:9090/bdd_dto/api/poliza
+{
+  "propietario": "Maria Maria",
+  "valorSeguroAuto": 3000.00,
+  "modeloAuto": "B",
+  "accidentes": 2,
+  "edadPropietario": 28
+}
