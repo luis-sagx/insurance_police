@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../controller/insurance_controller.dart';
 import '../../model/poliza.dart';
+import '../widgets/custom_input.dart';
+import '../widgets/custom_button.dart';
+import '../widgets/custom_radio.dart';
+import '../../utils/themes/schema_color.dart';
 
 class PolicePage extends StatefulWidget {
   const PolicePage({super.key});
@@ -113,34 +117,40 @@ class _PolicePageState extends State<PolicePage> {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
+                        color: SchemaColor.secondaryColor,
                       ),
                     ),
-                    TextFormField(
+                    const SizedBox(height: 10),
+                    CustomInput(
                       controller: _nameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Nombre Completo',
-                      ),
+                      label: 'Nombre Completo',
                       validator: (value) =>
                           value == null || value.isEmpty ? 'Requerido' : null,
                     ),
                     const SizedBox(height: 10),
-                    const Text('Edad:'),
-                    RadioListTile<AgeRange>(
-                      title: const Text('18 a 23 años'),
+                    const Text(
+                      'Edad:',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    CustomRadio<AgeRange>(
+                      title: '18 a 23 años',
                       value: AgeRange.young,
                       groupValue: _selectedAgeRange,
                       onChanged: (value) =>
                           setState(() => _selectedAgeRange = value),
                     ),
-                    RadioListTile<AgeRange>(
-                      title: const Text('24 a 55 años'),
+                    CustomRadio<AgeRange>(
+                      title: '24 a 55 años',
                       value: AgeRange.adult,
                       groupValue: _selectedAgeRange,
                       onChanged: (value) =>
                           setState(() => _selectedAgeRange = value),
                     ),
-                    RadioListTile<AgeRange>(
-                      title: const Text('Mayor a 55 años'),
+                    CustomRadio<AgeRange>(
+                      title: 'Mayor a 55 años',
                       value: AgeRange.senior,
                       groupValue: _selectedAgeRange,
                       onChanged: (value) =>
@@ -152,16 +162,23 @@ class _PolicePageState extends State<PolicePage> {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
+                        color: SchemaColor.secondaryColor,
                       ),
                     ),
                     const SizedBox(height: 10),
-                    const Text('Modelo:'),
+                    const Text(
+                      'Modelo:',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         Expanded(
-                          child: RadioListTile<CarModel>(
-                            title: const Text('A'),
+                          child: CustomRadio<CarModel>(
+                            title: 'A',
                             value: CarModel.A,
                             groupValue: _selectedModel,
                             onChanged: (value) =>
@@ -169,8 +186,8 @@ class _PolicePageState extends State<PolicePage> {
                           ),
                         ),
                         Expanded(
-                          child: RadioListTile<CarModel>(
-                            title: const Text('B'),
+                          child: CustomRadio<CarModel>(
+                            title: 'B',
                             value: CarModel.B,
                             groupValue: _selectedModel,
                             onChanged: (value) =>
@@ -178,8 +195,8 @@ class _PolicePageState extends State<PolicePage> {
                           ),
                         ),
                         Expanded(
-                          child: RadioListTile<CarModel>(
-                            title: const Text('C'),
+                          child: CustomRadio<CarModel>(
+                            title: 'C',
                             value: CarModel.C,
                             groupValue: _selectedModel,
                             onChanged: (value) =>
@@ -188,11 +205,9 @@ class _PolicePageState extends State<PolicePage> {
                         ),
                       ],
                     ),
-                    TextFormField(
+                    CustomInput(
                       controller: _valorController,
-                      decoration: const InputDecoration(
-                        labelText: 'Valor del Vehículo (\$)',
-                      ),
+                      label: 'Valor del Vehículo (\$)',
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),
@@ -208,11 +223,10 @@ class _PolicePageState extends State<PolicePage> {
                         return null;
                       },
                     ),
-                    TextFormField(
+                    const SizedBox(height: 10),
+                    CustomInput(
                       controller: _accidentesController,
-                      decoration: const InputDecoration(
-                        labelText: 'Número de Accidentes',
-                      ),
+                      label: 'Número de Accidentes',
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value == null || value.isEmpty) return 'Requerido';
@@ -224,20 +238,11 @@ class _PolicePageState extends State<PolicePage> {
                       },
                     ),
                     const SizedBox(height: 20),
-                    _isLoading
-                        ? const Center(child: CircularProgressIndicator())
-                        : ElevatedButton(
-                            onPressed: _submit,
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 15),
-                              backgroundColor: Colors.blueAccent,
-                              foregroundColor: Colors.white,
-                            ),
-                            child: const Text(
-                              'Registrar y Cotizar',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ),
+                    CustomButton(
+                      text: 'Registrar y Cotizar',
+                      onPressed: _submit,
+                      isLoading: _isLoading,
+                    ),
                   ],
                 ),
               ),
@@ -249,7 +254,7 @@ class _PolicePageState extends State<PolicePage> {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Colors.green,
+                    color: SchemaColor.accentColor,
                   ),
                 ),
                 Card(

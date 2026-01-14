@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'utils/themes/general_theme.dart';
 import 'view/pages/police_page.dart';
 import 'view/pages/car_page.dart';
 import 'view/pages/propietario_page.dart';
@@ -15,10 +16,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Seguros',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
+      theme: GeneralTheme.lightTheme,
       home: const MainPage(),
     );
   }

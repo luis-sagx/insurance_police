@@ -4,7 +4,7 @@ import 'schema_color.dart';
 class ButtonThemeApp {
   static final primaryButtonStyle = ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      backgroundColor: SchemaColor.primaryColor,
+      backgroundColor: SchemaColor.secondaryColor,
       foregroundColor: SchemaColor.lightTextColor,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
