@@ -47,29 +47,70 @@ class _CarPageState extends State<CarPage> {
               itemBuilder: (context, index) {
                 final auto = _automoviles[index];
                 return Card(
-                  margin: const EdgeInsets.all(8.0),
-                  child: ListTile(
-                    title: Text(
-                      'Modelo: ${auto.modelo} - \$${auto.valor.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: SchemaColor.secondaryColor,
-                        fontSize: 18,
-                      ),
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Propietario ID: ${auto.propietarioId} - ${auto.propietarioNombreC ?? "N/A"}',
+                  elevation: 2,
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(
+                        'Modelo: ${auto.modelo}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: SchemaColor.primaryColor,
+                          fontSize: 18,
                         ),
-                        Text('Accidentes: ${auto.accidentes}'),
-                      ],
-                    ),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.info_outline),
-                      onPressed: () => _showPolizaDetails(auto.id!),
-                      color: SchemaColor.secondaryColor,
+                      ),
+                      subtitle: Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.person,
+                                  size: 16,
+                                  color: Colors.grey,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(auto.propietarioNombreC ?? "N/A"),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.attach_money,
+                                  size: 16,
+                                  color: Colors.grey,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  auto.valor.toStringAsFixed(2),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      trailing: Container(
+                        decoration: BoxDecoration(
+                          color: SchemaColor.secondaryColor.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: IconButton(
+                          icon: const Icon(Icons.arrow_forward_ios, size: 18),
+                          onPressed: () => _showPolizaDetails(auto.id!),
+                          color: SchemaColor.secondaryColor,
+                        ),
+                      ),
                     ),
                   ),
                 );
@@ -103,82 +144,42 @@ class _CarPageState extends State<CarPage> {
 
             final poliza = snapshot.data!;
             return Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(24.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Detalles de la Póliza',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: SchemaColor.secondaryColor,
-                    ),
+                  Row(
+                    children: const [
+                      Icon(Icons.description, color: SchemaColor.primaryColor),
+                      SizedBox(width: 10),
+                      Text(
+                        'Detalles de la Póliza',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: SchemaColor.primaryColor,
+                        ),
+                      ),
+                    ],
                   ),
-                  const Divider(),
-                  ListTile(
-                    title: const Text(
-                      'Costo Total',
-                      style: TextStyle(
-                        color: SchemaColor.accentColor,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    subtitle: Text(
-                      '\$${poliza.costoTotal.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: SchemaColor.secondaryColor,
-                      ),
-                    ),
+                  const Divider(height: 30),
+                  _buildDetailRow(
+                    'Costo Total',
+                    '\$${poliza.costoTotal.toStringAsFixed(2)}',
+                    isHighlight: true,
                   ),
-                  ListTile(
-                    title: const Text(
-                      'Propietario',
-                      style: TextStyle(
-                        color: SchemaColor.accentColor,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    subtitle: Text(poliza.propietario),
+                  _buildDetailRow('Propietario', poliza.propietario),
+                  _buildDetailRow(
+                    'Rango de Edad',
+                    '${InsuranceController.getAgeCategory(poliza.edadPropietario)} ',
                   ),
-                  ListTile(
-                    title: const Text(
-                      'Edad Propietario',
-                      style: TextStyle(
-                        color: SchemaColor.accentColor,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    subtitle: Text(
-                      InsuranceController.getAgeCategory(
-                        poliza.edadPropietario,
-                      ),
-                    ),
+                  _buildDetailRow('Modelo Auto', poliza.modeloAuto),
+                  _buildDetailRow(
+                    'Valor Auto',
+                    '\$${poliza.valorSeguroAuto.toStringAsFixed(2)}',
                   ),
-                  ListTile(
-                    title: const Text(
-                      'Modelo Auto',
-                      style: TextStyle(
-                        color: SchemaColor.accentColor,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    subtitle: Text(poliza.modeloAuto),
-                  ),
-                  ListTile(
-                    title: const Text(
-                      'Valor Auto',
-                      style: TextStyle(
-                        color: SchemaColor.accentColor,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    subtitle: Text('\$${poliza.valorSeguroAuto}'),
-                  ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 30),
                   CustomButton(
                     text: 'Recalcular Seguro',
                     onPressed: () async {
@@ -193,6 +194,39 @@ class _CarPageState extends State<CarPage> {
           },
         );
       },
+    );
+  }
+
+  Widget _buildDetailRow(
+    String label,
+    String value, {
+    bool isHighlight = false,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              color: Colors.grey.shade600,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              color: isHighlight
+                  ? SchemaColor.secondaryColor
+                  : SchemaColor.darkTextColor,
+              fontSize: 16,
+              fontWeight: isHighlight ? FontWeight.bold : FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
     );
   }
 

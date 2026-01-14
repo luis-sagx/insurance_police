@@ -45,6 +45,34 @@ class _PolicePageState extends State<PolicePage> {
     return model.name; // "A", "B", "C"
   }
 
+  Widget _buildModelOption(String label, CarModel model) {
+    bool isSelected = _selectedModel == model;
+    return GestureDetector(
+      onTap: () => setState(() => _selectedModel = model),
+      child: Container(
+        alignment: Alignment.center,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected ? SchemaColor.secondaryColor : Colors.white,
+          border: Border.all(
+            color: isSelected
+                ? SchemaColor.secondaryColor
+                : Colors.grey.shade300,
+          ),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? Colors.white : SchemaColor.darkTextColor,
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ),
+      ),
+    );
+  }
+
   Future<void> _submit() async {
     if (_formKey.currentState!.validate() &&
         _selectedAgeRange != null &&
@@ -102,198 +130,244 @@ class _PolicePageState extends State<PolicePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Nueva Póliza')),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const Text(
-                      'Datos del Propietario',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: SchemaColor.secondaryColor,
-                      ),
+        child: Column(
+          children: [
+            Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Card(
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    const SizedBox(height: 10),
-                    CustomInput(
-                      controller: _nameController,
-                      label: 'Nombre Completo',
-                      validator: (value) =>
-                          value == null || value.isEmpty ? 'Requerido' : null,
-                    ),
-                    const SizedBox(height: 10),
-                    const Text(
-                      'Edad:',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    CustomRadio<AgeRange>(
-                      title: '18 a 23 años',
-                      value: AgeRange.young,
-                      groupValue: _selectedAgeRange,
-                      onChanged: (value) =>
-                          setState(() => _selectedAgeRange = value),
-                    ),
-                    CustomRadio<AgeRange>(
-                      title: '24 a 55 años',
-                      value: AgeRange.adult,
-                      groupValue: _selectedAgeRange,
-                      onChanged: (value) =>
-                          setState(() => _selectedAgeRange = value),
-                    ),
-                    CustomRadio<AgeRange>(
-                      title: 'Mayor a 55 años',
-                      value: AgeRange.senior,
-                      groupValue: _selectedAgeRange,
-                      onChanged: (value) =>
-                          setState(() => _selectedAgeRange = value),
-                    ),
-                    const Divider(),
-                    const Text(
-                      'Datos del Vehículo',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: SchemaColor.secondaryColor,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    const Text(
-                      'Modelo:',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Expanded(
-                          child: CustomRadio<CarModel>(
-                            title: 'A',
-                            value: CarModel.A,
-                            groupValue: _selectedModel,
-                            onChanged: (value) =>
-                                setState(() => _selectedModel = value),
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: const [
+                              Icon(
+                                Icons.person,
+                                color: SchemaColor.primaryColor,
+                              ),
+                              SizedBox(width: 10),
+                              Text(
+                                'Datos del Propietario',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: SchemaColor.primaryColor,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        Expanded(
-                          child: CustomRadio<CarModel>(
-                            title: 'B',
-                            value: CarModel.B,
-                            groupValue: _selectedModel,
-                            onChanged: (value) =>
-                                setState(() => _selectedModel = value),
+                          const SizedBox(height: 20),
+                          CustomInput(
+                            controller: _nameController,
+                            label: 'Nombre Completo',
+                            icon: Icons.person_outline,
+                            validator: (value) => value == null || value.isEmpty
+                                ? 'Requerido'
+                                : null,
                           ),
-                        ),
-                        Expanded(
-                          child: CustomRadio<CarModel>(
-                            title: 'C',
-                            value: CarModel.C,
-                            groupValue: _selectedModel,
-                            onChanged: (value) =>
-                                setState(() => _selectedModel = value),
+                          const SizedBox(height: 20),
+                          const Text(
+                            'Rango de Edad:',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: SchemaColor.darkTextColor,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    CustomInput(
-                      controller: _valorController,
-                      label: 'Valor del Vehículo (\$)',
-                      keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true,
+                          const SizedBox(height: 8),
+                          Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey.shade300),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Column(
+                              children: [
+                                CustomRadio<AgeRange>(
+                                  title: 'De 18 a 23 años',
+                                  value: AgeRange.young,
+                                  groupValue: _selectedAgeRange,
+                                  onChanged: (value) =>
+                                      setState(() => _selectedAgeRange = value),
+                                ),
+                                CustomRadio<AgeRange>(
+                                  title: 'De 24 a 55 años',
+                                  value: AgeRange.adult,
+                                  groupValue: _selectedAgeRange,
+                                  onChanged: (value) =>
+                                      setState(() => _selectedAgeRange = value),
+                                ),
+                                CustomRadio<AgeRange>(
+                                  title: 'Mayor de 55 años',
+                                  value: AgeRange.senior,
+                                  groupValue: _selectedAgeRange,
+                                  onChanged: (value) =>
+                                      setState(() => _selectedAgeRange = value),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) return 'Requerido';
-                        final doubleValue = double.tryParse(value);
-                        if (doubleValue == null)
-                          return 'Ingrese un número válido';
-                        if (doubleValue < 0)
-                          return 'El valor no puede ser negativo';
-                        if (doubleValue > 1000000)
-                          return 'El valor máximo es 1,000,000';
-                        return null;
-                      },
                     ),
-                    const SizedBox(height: 10),
-                    CustomInput(
-                      controller: _accidentesController,
-                      label: 'Número de Accidentes',
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) return 'Requerido';
-                        final intValue = int.tryParse(value);
-                        if (intValue == null) return 'Ingrese un entero válido';
-                        if (intValue < 0) return 'No puede ser negativo';
-                        if (intValue > 100) return 'Número demasiado alto';
-                        return null;
-                      },
+                  ),
+                  const SizedBox(height: 20),
+                  Card(
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    const SizedBox(height: 20),
-                    CustomButton(
-                      text: 'Registrar y Cotizar',
-                      onPressed: _submit,
-                      isLoading: _isLoading,
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: const [
+                              Icon(
+                                Icons.directions_car,
+                                color: SchemaColor.primaryColor,
+                              ),
+                              SizedBox(width: 10),
+                              Text(
+                                'Datos del Vehículo',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: SchemaColor.primaryColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+                          CustomInput(
+                            controller: _valorController,
+                            label: 'Valor del Vehículo (\$)',
+                            icon: Icons.attach_money,
+                            keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true,
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty)
+                                return 'Requerido';
+                              final doubleValue = double.tryParse(value);
+                              if (doubleValue == null)
+                                return 'Ingrese un número válido';
+                              if (doubleValue < 0)
+                                return 'El valor no puede ser negativo';
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          CustomInput(
+                            controller: _accidentesController,
+                            label: 'Número de Accidentes',
+                            icon: Icons.warning_amber_rounded,
+                            keyboardType: TextInputType.number,
+                            validator: (value) {
+                              if (value == null || value.isEmpty)
+                                return 'Requerido';
+                              final intValue = int.tryParse(value);
+                              if (intValue == null)
+                                return 'Ingrese un entero válido';
+                              if (intValue < 0) return 'No puede ser negativo';
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          const Text(
+                            'Modelo del Auto:',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: SchemaColor.darkTextColor,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _buildModelOption('A', CarModel.A),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: _buildModelOption('B', CarModel.B),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: _buildModelOption('C', CarModel.C),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
+                  ),
+                  const SizedBox(height: 30),
+                  CustomButton(
+                    text: 'COTIZAR AHORA',
+                    onPressed: _submit,
+                    isLoading: _isLoading,
+                  ),
+                ],
+              ),
+            ),
+            if (_polizaGenerada != null) ...[
+              const SizedBox(height: 20),
+              const Divider(thickness: 2),
+              const Text(
+                'Resultado de Cotización',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: SchemaColor.accentColor,
                 ),
               ),
-              if (_polizaGenerada != null) ...[
-                const SizedBox(height: 20),
-                const Divider(thickness: 2),
-                const Text(
-                  'Resultado de Cotización',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: SchemaColor.accentColor,
+              Card(
+                margin: const EdgeInsets.only(top: 10),
+                elevation: 4,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Propietario: ${_polizaGenerada!.propietario}'),
+                      Text(
+                        'Edad: ${InsuranceController.getAgeCategory(_polizaGenerada!.edadPropietario)}',
+                      ),
+                      const Divider(),
+                      Text('Modelo Auto: ${_polizaGenerada!.modeloAuto}'),
+                      Text(
+                        'Valor Auto: \$${_polizaGenerada!.valorSeguroAuto.toStringAsFixed(2)}',
+                      ),
+                      Text('Accidentes: ${_polizaGenerada!.accidentes}'),
+                      const Divider(),
+                      Text(
+                        'Costo Total Póliza: \$${_polizaGenerada!.costoTotal.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                Card(
-                  margin: const EdgeInsets.only(top: 10),
-                  elevation: 4,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Propietario: ${_polizaGenerada!.propietario}'),
-                        Text(
-                          'Edad: ${InsuranceController.getAgeCategory(_polizaGenerada!.edadPropietario)}',
-                        ),
-                        const Divider(),
-                        Text('Modelo Auto: ${_polizaGenerada!.modeloAuto}'),
-                        Text(
-                          'Valor Auto: \$${_polizaGenerada!.valorSeguroAuto.toStringAsFixed(2)}',
-                        ),
-                        Text('Accidentes: ${_polizaGenerada!.accidentes}'),
-                        const Divider(),
-                        Text(
-                          'Costo Total Póliza: \$${_polizaGenerada!.costoTotal.toStringAsFixed(2)}',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                TextButton(
-                  onPressed: _resetForm,
-                  child: const Text('Nueva Cotización'),
-                ),
-              ],
+              ),
+              TextButton(
+                onPressed: _resetForm,
+                child: const Text('Nueva Cotización'),
+              ),
             ],
-          ),
+          ],
         ),
       ),
     );
