@@ -47,6 +47,34 @@ public class PolizaController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/automovil/{automovilId}")
+    public ResponseEntity<PolizaResponse> obtenerPolizaPorAutomovilId(@PathVariable Long automovilId) {
+        try {
+            // Obtener auto
+            AutomovilDTO autoDTO = automovilService.obtenerPorId(automovilId);
+
+            // Obtener propietario
+            PropietarioDTO propietarioDTO = propietarioService.obtenerPorId(autoDTO.getPropietarioId());
+
+            // Obtener seguro
+            SeguroDTO seguroDTO = seguroService.obtenerPorAutomovilId(automovilId);
+
+            // Armar respuesta
+            PolizaResponse response = new PolizaResponse(
+                    propietarioDTO.getNombreCompleto(),
+                    autoDTO.getModelo(),
+                    autoDTO.getValor(),
+                    propietarioDTO.getEdad(),
+                    autoDTO.getAccidentes(),
+                    seguroDTO.getCostoTotal()
+            );
+
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @GetMapping("/usuario")
     public ResponseEntity<PolizaResponse> obtenerPolizaPorNombre(@RequestParam String nombre) {
         // Buscar propietario por nombre
