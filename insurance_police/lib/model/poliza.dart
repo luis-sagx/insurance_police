@@ -1,25 +1,28 @@
 class Poliza {
   final String propietario;
-  final double valorSeguroAuto;
   final String modeloAuto;
-  final int accidentes;
+  final double valorSeguroAuto; // This seems to be "valor" in AutomovilDTO
   final int edadPropietario;
+  final int accidentes;
+  final double costoTotal; // Calculated cost from SeguroDTO
 
   Poliza({
     required this.propietario,
-    required this.valorSeguroAuto,
     required this.modeloAuto,
-    required this.accidentes,
+    required this.valorSeguroAuto,
     required this.edadPropietario,
+    required this.accidentes,
+    required this.costoTotal,
   });
 
   factory Poliza.fromJson(Map<String, dynamic> json) {
     return Poliza(
       propietario: json['propietario'],
-      valorSeguroAuto: (json['valorSeguroAuto'] as num).toDouble(),
       modeloAuto: json['modeloAuto'],
-      accidentes: json['accidentes'],
+      valorSeguroAuto: (json['valorSeguroAuto'] as num).toDouble(),
       edadPropietario: json['edadPropietario'],
+      accidentes: json['accidentes'],
+      costoTotal: (json['costoTotal'] as num).toDouble(),
     );
   }
 }

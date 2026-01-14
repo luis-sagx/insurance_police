@@ -9,117 +9,57 @@ class PropietarioPage extends StatefulWidget {
   State<PropietarioPage> createState() => _PropietarioPageState();
 }
 
-enum AgeRange { young, adult, senior }
-
 class _PropietarioPageState extends State<PropietarioPage> {
-  final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
   final _controller = InsuranceController();
+  List<Propietario> _propietarios = [];
+  bool _isLoading = true;
 
-  AgeRange? _selectedAgeRange;
-
-  int _getAgeFromRange(AgeRange range) {
-    switch (range) {
-      case AgeRange.young:
-        return 20;
-      case AgeRange.adult:
-        return 35;
-      case AgeRange.senior:
-        return 60;
-    }
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
   }
 
-  Future<void> _submit() async {
-    if (_formKey.currentState!.validate() && _selectedAgeRange != null) {
-      final propietario = Propietario(
-        nombreCompleto: _nameController.text,
-        edad: _getAgeFromRange(_selectedAgeRange!),
-      );
-
-      final Propietario? result = await _controller.createPropietario(
-        propietario,
-      );
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              result != null
-                  ? 'Propietario creado con ID: ${result.id}'
-                  : 'Error al crear',
-            ),
-          ),
-        );
-        if (result != null) {
-          _nameController.clear();
-          setState(() => _selectedAgeRange = null);
-        }
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Complete todos los campos')),
-      );
+  Future<void> _loadData() async {
+    setState(() => _isLoading = true);
+    final propietarios = await _controller.getPropietarios();
+    if (mounted) {
+      setState(() {
+        _propietarios = propietarios;
+        _isLoading = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Registrar Propietario')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TextFormField(
-                  controller: _nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Nombre Completo',
+      appBar: AppBar(title: const Text('Registros de Propietarios')),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _propietarios.isEmpty
+          ? const Center(child: Text('No hay registros encontrados'))
+          : ListView.builder(
+              itemCount: _propietarios.length,
+              itemBuilder: (context, index) {
+                final prop = _propietarios[index];
+                return Card(
+                  margin: const EdgeInsets.all(8.0),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      child: Text(
+                        prop.nombreCompleto.isNotEmpty
+                            ? prop.nombreCompleto[0].toUpperCase()
+                            : '?',
+                      ),
+                    ),
+                    title: Text(prop.nombreCompleto),
+                    subtitle: Text('Edad: ${prop.edad} años'),
+                    trailing: Text('ID: ${prop.id}'),
                   ),
-                  validator: (value) =>
-                      value == null || value.isEmpty ? 'Requerido' : null,
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  'Edad:',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                RadioListTile<AgeRange>(
-                  title: const Text('18 a 23 años'),
-                  value: AgeRange.young,
-                  groupValue: _selectedAgeRange,
-                  onChanged: (value) =>
-                      setState(() => _selectedAgeRange = value),
-                ),
-                RadioListTile<AgeRange>(
-                  title: const Text('24 a 55 años'),
-                  value: AgeRange.adult,
-                  groupValue: _selectedAgeRange,
-                  onChanged: (value) =>
-                      setState(() => _selectedAgeRange = value),
-                ),
-                RadioListTile<AgeRange>(
-                  title: const Text('Mayor a 55 años'),
-                  value: AgeRange.senior,
-                  groupValue: _selectedAgeRange,
-                  onChanged: (value) =>
-                      setState(() => _selectedAgeRange = value),
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _submit,
-                    child: const Text('Guardar'),
-                  ),
-                ),
-              ],
+                );
+              },
             ),
-          ),
-        ),
-      ),
     );
   }
 }

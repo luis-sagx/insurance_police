@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'view/pages/propietario_page.dart';
 import 'view/pages/automovil_page.dart';
-import 'view/pages/poliza_page.dart';
+import 'view/pages/list_page.dart';
+import 'view/pages/propietario_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -35,7 +35,7 @@ class _MainPageState extends State<MainPage> {
   int _currentIndex = 0;
   final List<Widget> _pages = [
     const AutomovilPage(),
-    const PolizaPage(),
+    const ListPage(),
     const PropietarioPage(),
   ];
 
@@ -51,14 +51,17 @@ class _MainPageState extends State<MainPage> {
           });
         },
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.receipt), label: 'Pólizas'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.directions_car),
-            label: 'Automóviles',
+            icon: Icon(Icons.add_circle),
+            label: 'Nueva Póliza',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Propietarios',
+            icon: Icon(Icons.list_alt),
+            label: 'Reporte Autos',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.people),
+            label: 'Reporte Propietarios',
           ),
         ],
       ),
