@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import '../../controller/insurance_controller.dart';
 import '../../model/poliza.dart';
 
-class AutomovilPage extends StatefulWidget {
-  const AutomovilPage({super.key});
+class PolicePage extends StatefulWidget {
+  const PolicePage({super.key});
 
   @override
-  State<AutomovilPage> createState() => _AutomovilPageState();
+  State<PolicePage> createState() => _PolicePageState();
 }
 
 enum AgeRange { young, adult, senior }
 
 enum CarModel { A, B, C }
 
-class _AutomovilPageState extends State<AutomovilPage> {
+class _PolicePageState extends State<PolicePage> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _valorController = TextEditingController();
@@ -196,8 +196,17 @@ class _AutomovilPageState extends State<AutomovilPage> {
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),
-                      validator: (value) =>
-                          value == null || value.isEmpty ? 'Requerido' : null,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) return 'Requerido';
+                        final doubleValue = double.tryParse(value);
+                        if (doubleValue == null)
+                          return 'Ingrese un número válido';
+                        if (doubleValue < 0)
+                          return 'El valor no puede ser negativo';
+                        if (doubleValue > 1000000)
+                          return 'El valor máximo es 1,000,000';
+                        return null;
+                      },
                     ),
                     TextFormField(
                       controller: _accidentesController,
@@ -205,8 +214,14 @@ class _AutomovilPageState extends State<AutomovilPage> {
                         labelText: 'Número de Accidentes',
                       ),
                       keyboardType: TextInputType.number,
-                      validator: (value) =>
-                          value == null || value.isEmpty ? 'Requerido' : null,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) return 'Requerido';
+                        final intValue = int.tryParse(value);
+                        if (intValue == null) return 'Ingrese un entero válido';
+                        if (intValue < 0) return 'No puede ser negativo';
+                        if (intValue > 100) return 'Número demasiado alto';
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 20),
                     _isLoading
@@ -246,7 +261,9 @@ class _AutomovilPageState extends State<AutomovilPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Propietario: ${_polizaGenerada!.propietario}'),
-                        Text('Edad: ${_polizaGenerada!.edadPropietario} años'),
+                        Text(
+                          'Edad: ${InsuranceController.getAgeCategory(_polizaGenerada!.edadPropietario)}',
+                        ),
                         const Divider(),
                         Text('Modelo Auto: ${_polizaGenerada!.modeloAuto}'),
                         Text(

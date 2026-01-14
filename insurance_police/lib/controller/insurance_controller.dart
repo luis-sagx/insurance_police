@@ -63,7 +63,6 @@ class InsuranceController {
     return [];
   }
 
-  // Create Poliza directly (using the /poliza endpoint)
   Future<Poliza?> createPoliza(Map<String, dynamic> polizaData) async {
     try {
       final response = await http.post(
@@ -110,5 +109,12 @@ class InsuranceController {
       print('Error recalculating: $e');
       return false;
     }
+  }
+
+  static String getAgeCategory(int age) {
+    if (age == 20) return '18 a 23 años';
+    if (age == 35) return '24 a 55 años';
+    if (age == 60) return 'Mayor a 55 años';
+    return '$age años';
   }
 }

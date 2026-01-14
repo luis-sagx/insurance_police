@@ -3,14 +3,14 @@ import '../../controller/insurance_controller.dart';
 import '../../model/automovil.dart';
 import '../../model/poliza.dart';
 
-class ListPage extends StatefulWidget {
-  const ListPage({super.key});
+class CarPage extends StatefulWidget {
+  const CarPage({super.key});
 
   @override
-  State<ListPage> createState() => _ListPageState();
+  State<CarPage> createState() => _CarPageState();
 }
 
-class _ListPageState extends State<ListPage> {
+class _CarPageState extends State<CarPage> {
   final _controller = InsuranceController();
   List<Automovil> _automoviles = [];
   bool _isLoading = true;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'view/pages/automovil_page.dart';
-import 'view/pages/list_page.dart';
+import 'view/pages/police_page.dart';
+import 'view/pages/car_page.dart';
 import 'view/pages/propietario_page.dart';
 
 void main() {
@@ -34,8 +34,8 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   int _currentIndex = 0;
   final List<Widget> _pages = [
-    const AutomovilPage(),
-    const ListPage(),
+    const PolicePage(),
+    const CarPage(),
     const PropietarioPage(),
   ];
 

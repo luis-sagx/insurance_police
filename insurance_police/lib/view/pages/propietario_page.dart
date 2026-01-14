@@ -54,7 +54,9 @@ class _PropietarioPageState extends State<PropietarioPage> {
                       ),
                     ),
                     title: Text(prop.nombreCompleto),
-                    subtitle: Text('Edad: ${prop.edad} años'),
+                    subtitle: Text(
+                      'Edad: ${InsuranceController.getAgeCategory(prop.edad)}',
+                    ),
                     trailing: Text('ID: ${prop.id}'),
                   ),
                 );
